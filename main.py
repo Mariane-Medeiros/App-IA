@@ -14,3 +14,8 @@ async def test_receive_image(file: UploadFile = File(...)):
 
     # Retornar resposta simples para o app mobile
     return JSONResponse(content={"mensagem": f"Recebi o arquivo {file.filename} com sucesso!"})
+
+
+@app.get("/ping")
+async def ping():
+    return {"message": "pong"}
