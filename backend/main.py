@@ -38,7 +38,7 @@ preprocess = transforms.Compose([
     transforms.Normalize(mean=checkpoint["mean"], std=checkpoint["std"])
 ])
 
-# === Endpoint de predição ===
+#
 
 
 @app.post("/predict")
