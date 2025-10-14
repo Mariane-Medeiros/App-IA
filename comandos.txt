@@ -1,0 +1,4 @@
+build command = pip install -r requirements.txt
+start commando = python -m uvicorn main:app --host 0.0.0.0 --port 10000 --reload
+Environment = 87d11e2c5e2ec89266fc21d77ce69768
+url = http://localhost:10000/ping
