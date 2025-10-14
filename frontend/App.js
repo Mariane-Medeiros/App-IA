@@ -22,25 +22,38 @@ export default function App() {
   };
 
 async function enviarImagem() {
-  // Escolher imagem
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: [ImagePicker.MediaType.Images], // atualizado!
-    quality: 1,
-  });
-
-  if (result.canceled) return;
-
-  // Pega o arquivo
-  const file = result.assets[0];
-  const formData = new FormData();
-
-  formData.append("file", {
-    uri: file.uri,
-    name: "imagem.jpg",
-    type: "image/jpeg",
-  });
-
   try {
+    // Solicita permissão para usar a câmera
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      alert("Permissão de câmera negada!");
+      return;
+    }
+
+    // Abrir câmera
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    console.log("Resultado da câmera:", result);
+
+    if (result.canceled) {
+      console.log("Usuário cancelou a foto");
+      return;
+    }
+
+    console.log("Foto tirada com sucesso!");
+
+    const file = result.assets[0];
+    const formData = new FormData();
+    formData.append("file", {
+      uri: file.uri,
+      name: "imagem.jpg",
+      type: "image/jpeg",
+    });
+
+    // Envia para o backend
     const response = await fetch("https://meu-backend.onrender.com/predict", {
       method: "POST",
       body: formData,
@@ -49,14 +62,20 @@ async function enviarImagem() {
       },
     });
 
-    const data = await response.json();
-    console.log("Resposta do servidor:", data);
+    console.log("Status HTTP:", response.status);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Resposta do servidor:", data);
+    } else {
+      const text = await response.text();
+      console.error("Erro do backend:", response.status, text);
+    }
 
   } catch (error) {
-    console.error("Erro ao enviar imagem:", error);
+    console.error("Erro no envio:", error);
   }
 }
-
 
 
   return (
